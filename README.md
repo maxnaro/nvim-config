@@ -66,11 +66,21 @@ on Neovim's PATH. Mason does not install this server. Open a `.dbml` file and
 use `:LspInfo` to check attachment; standalone files work outside Git projects.
 
 For diagrams, install `npm install -g @softwaretechnik/dbml-renderer` and ensure
-`dbml-renderer` is on PATH. `:DBMLPreview` renders the current buffer (including
-unsaved edits) as SVG and opens it using the system viewer. `:DBMLExport` writes
-an SVG next to the source file; `:DBMLExport path/to/diagram.svg` chooses a path.
-Existing files are protected unless you use `:DBMLExport!`. Rendering runs locally
-and requires a graphical SVG viewer for preview.
+`dbml-renderer` is on PATH. `:DBMLPreview` (or `Space cp` in a DBML buffer)
+renders the current buffer, including unsaved edits, as SVG and opens it using the
+system viewer. On WSL, preview uses `wslpath` and Windows `explorer.exe`; Windows
+interop and a Windows SVG viewer or browser association are required.
+`:DBMLExport` (or `Space ce` in a DBML buffer) writes an SVG next to the source
+file; `:DBMLExport path/to/diagram.svg` chooses a path. Existing files are
+protected unless you use `:DBMLExport!`. These commands render locally.
+
+Alternatively, `:DBMLCloudPreview` (or `Space cP`) uses the
+[dbdiagram.io API](https://docs.dbdiagram.io/api/v1) to create a diagram and
+open it in the browser, where you can export it. Set `DBDIAGRAM_API_TOKEN` to
+a workspace API token and install `curl`. After confirmation, this uploads the
+current buffer, including unsaved edits, and creates a **persistent** diagram
+in that workspace; delete it on dbdiagram.io when no longer needed. API access
+may depend on your plan. The API does not document an image-export endpoint.
 
 ## Markdown formatting
 
