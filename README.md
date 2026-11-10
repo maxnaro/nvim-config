@@ -58,6 +58,20 @@ Alt-h/j/k/l navigate editor splits and tmux panes from Normal, Insert, Visual,
 and terminal modes. Navigation leaves input/selection mode; picker-local keys
 remain available, including Alt-h to toggle hidden files.
 
+## Markdown formatting
+
+Markdown and MDX buffers run Prettier followed by `markdownlint-cli2 --fix`
+on save or with `Space cf`, even before lint diagnostics appear. A table of
+contents is also updated when the file contains `<!-- toc -->`. Mason installs
+the tools through the LazyVim Markdown and Prettier extras; use `:ConformInfo`
+to check their availability. Prettier wraps prose (overriding its `proseWrap`
+setting) at its configured `printWidth`, 80 by default. Set that width to match
+the project's markdownlint MD013 line-length rule. Long URLs, tables, code blocks,
+and other unbreakable content may still need manual attention or rule exceptions.
+Not every markdownlint issue can be fixed automatically; remaining diagnostics
+need manual edits. Prettier and markdownlint rules should be configured
+compatibly in each project.
+
 ## SQL formatting
 
 The LazyVim SQL extra installs SQLFluff through Mason. SQL, MySQL, and PL/SQL
