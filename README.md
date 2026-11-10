@@ -58,6 +58,19 @@ Alt-h/j/k/l navigate editor splits and tmux panes from Normal, Insert, Visual,
 and terminal modes. Navigation leaves input/selection mode; picker-local keys
 remain available, including Alt-h to toggle hidden files.
 
+## SQL formatting
+
+The LazyVim SQL extra installs SQLFluff through Mason. SQL, MySQL, and PL/SQL
+buffers use it for formatting on save and with `Space cf`; formatting also works
+without a project configuration. Use `:ConformInfo` to check availability and
+inspect the formatter log if formatting fails.
+
+The extra currently passes `--dialect=ansi`, overriding the dialect in a project
+`.sqlfluff` file. For database-specific syntax, change the SQLFluff `args` in
+`lua/plugins/formatting.lua` to use the desired dialect (or remove the flag and
+set `dialect` in each project's SQLFluff configuration). SQLFluff may refuse to
+format SQL it cannot parse, including incomplete statements.
+
 ## AI completion
 
 Copilot starts disabled in each session. Enable it with `Space au`, then run
