@@ -58,6 +58,20 @@ Alt-h/j/k/l navigate editor splits and tmux panes from Normal, Insert, Visual,
 and terminal modes. Navigation leaves input/selection mode; picker-local keys
 remain available, including Alt-h to toggle hidden files.
 
+## DBML language server
+
+Install the [DBML language server](https://github.com/kamal-hamza/dbml-language-server)
+with `cargo install dbml-language-server` and ensure Cargo's bin directory is
+on Neovim's PATH. Mason does not install this server. Open a `.dbml` file and
+use `:LspInfo` to check attachment; standalone files work outside Git projects.
+
+For diagrams, install `npm install -g @softwaretechnik/dbml-renderer` and ensure
+`dbml-renderer` is on PATH. `:DBMLPreview` renders the current buffer (including
+unsaved edits) as SVG and opens it using the system viewer. `:DBMLExport` writes
+an SVG next to the source file; `:DBMLExport path/to/diagram.svg` chooses a path.
+Existing files are protected unless you use `:DBMLExport!`. Rendering runs locally
+and requires a graphical SVG viewer for preview.
+
 ## Markdown formatting
 
 Markdown and MDX buffers run Prettier followed by `markdownlint-cli2 --fix`
