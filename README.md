@@ -74,14 +74,6 @@ interop and a Windows SVG viewer or browser association are required.
 file; `:DBMLExport path/to/diagram.svg` chooses a path. Existing files are
 protected unless you use `:DBMLExport!`. These commands render locally.
 
-Alternatively, `:DBMLCloudPreview` (or `Space cP`) uses the
-[dbdiagram.io API](https://docs.dbdiagram.io/api/v1) to create a diagram and
-open it in the browser, where you can export it. Set `DBDIAGRAM_API_TOKEN` to
-a workspace API token and install `curl`. After confirmation, this uploads the
-current buffer, including unsaved edits, and creates a **persistent** diagram
-in that workspace; delete it on dbdiagram.io when no longer needed. API access
-may depend on your plan. The API does not document an image-export endpoint.
-
 ## Markdown formatting
 
 Markdown and MDX buffers run Prettier followed by `markdownlint-cli2 --fix`

@@ -20,11 +20,6 @@ local function open_preview(path)
     return vim.notify("Could not open diagram: Windows explorer.exe is unavailable", vim.log.levels.ERROR)
   end
 
-  if path:match("^https://") then
-    vim.system({ explorer, path }, { cwd = "/mnt/c", detach = true })
-    return
-  end
-
   vim.system({ "wslpath", "-w", path }, { text = true }, function(result)
     vim.schedule(function()
       if result.code ~= 0 or not result.stdout or result.stdout == "" then
@@ -80,65 +75,14 @@ local function render(output, preview, overwrite)
   end)
 end
 
-local function cloud_preview()
-  if vim.bo.filetype ~= "dbml" then
-    return vim.notify("Open a DBML buffer first", vim.log.levels.ERROR)
-  end
-  local token = vim.env.DBDIAGRAM_API_TOKEN
-  if not token or token == "" or token:find("[\r\n]") then
-    return vim.notify("Set DBDIAGRAM_API_TOKEN to a dbdiagram workspace API token", vim.log.levels.ERROR)
-  end
-  if vim.fn.executable("curl") ~= 1 then
-    return vim.notify("curl is required for dbdiagram.io", vim.log.levels.ERROR)
-  end
-  local content = table.concat(vim.api.nvim_buf_get_lines(0, 0, -1, false), "\n")
-  local name = vim.fn.expand("%:t:r")
-  if name == "" then
-    name = "Neovim DBML preview"
-  end
-  vim.ui.select({ "Cancel", "Upload" }, {
-    prompt = "Upload this DBML to dbdiagram.io? This creates a persistent workspace diagram.",
-  }, function(choice)
-    if choice ~= "Upload" then
-      return
-    end
-    -- Curl config is passed over stdin, so the workspace token is not in argv.
-    local function quote(value)
-      return '"' .. value:gsub('\\', '\\\\'):gsub('"', '\\"') .. '"'
-    end
-    local payload = vim.json.encode({ name = name, content = content })
-    local config = "header = " .. quote("dbdiagram-access-token: " .. token) .. "\n"
-      .. "header = \"Content-Type: application/json\"\n"
-      .. "data = " .. quote(payload) .. "\n"
-    vim.system({ "curl", "--silent", "--show-error", "--fail", "--config", "-", "https://api.dbdiagram.io/v1/diagrams" },
-      { stdin = config, text = true }, function(result)
-        vim.schedule(function()
-          if result.code ~= 0 then
-            return vim.notify("dbdiagram.io request failed: " .. (result.stderr or ""), vim.log.levels.ERROR)
-          end
-          local ok, data = pcall(vim.json.decode, result.stdout or "")
-          if not ok or type(data) ~= "table" or type(data._id) ~= "string" or not data._id:match("^[%da-fA-F]+$") then
-            return vim.notify("dbdiagram.io returned an invalid diagram ID", vim.log.levels.ERROR)
-          end
-          local url = "https://dbdiagram.io/d/" .. data._id
-          vim.notify("Created persistent dbdiagram.io diagram: " .. url)
-          open_preview(url)
-        end)
-      end)
-  end)
-end
-
 function M.setup()
   vim.api.nvim_create_autocmd("FileType", {
     pattern = "dbml",
     callback = function(event)
       vim.keymap.set("n", "<leader>cp", "<cmd>DBMLPreview<cr>", { buffer = event.buf, desc = "Preview DBML diagram" })
       vim.keymap.set("n", "<leader>ce", "<cmd>DBMLExport<cr>", { buffer = event.buf, desc = "Export DBML diagram" })
-      vim.keymap.set("n", "<leader>cP", "<cmd>DBMLCloudPreview<cr>", { buffer = event.buf, desc = "Preview DBML on dbdiagram.io" })
     end,
   })
-
-  vim.api.nvim_create_user_command("DBMLCloudPreview", cloud_preview, { desc = "Upload and preview DBML on dbdiagram.io" })
 
   vim.api.nvim_create_user_command("DBMLPreview", function()
     render(vim.fn.tempname() .. ".svg", true, false)
