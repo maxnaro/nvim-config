@@ -82,12 +82,13 @@ return {
       apply()
       local state = (vim.env.XDG_STATE_HOME or (vim.env.HOME .. "/.local/state")) .. "/dotfiles/theme"
       local function refresh()
+        local previous = require("config.palette")
         package.loaded["config.palette"] = nil
         local current = require("config.palette")
         local file = io.open(state .. "/mode", "r")
         local mode = file and file:read("*l") or "dark"
         if file then file:close() end
-        if mode ~= current.mode then apply() end
+        if mode ~= current.mode or not vim.deep_equal(previous, current) then apply() end
       end
       local watchers = {}
       local function watch(path)

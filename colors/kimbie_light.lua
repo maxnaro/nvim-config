@@ -1,3 +1,4 @@
+-- Kimbie Light adaptation, based on the Kimbie color scheme (CC-BY-SA 4.0).
 local p = require("config.palette")
 vim.o.background = "light"
 vim.g.colors_name = "kimbie_light"
