@@ -121,6 +121,50 @@ Alt-`]` / Alt-`[` cycle AI suggestions; Ctrl-`]` dismisses them.
 The toggle does not persist between sessions. Chat, assistant terminals, and
 next-edit suggestions are not enabled.
 
+## Jupyter notebooks
+
+Python `.ipynb` notebooks open as Python `# %%` cells with commented Markdown,
+using Jupytext. Existing Python completion and formatting remain available.
+Run `bash ~/.config/nvim/scripts/setup-jupyter.sh` once (Python 3.10+ required),
+ensure `~/.local/bin` is on PATH, then follow its restart instructions.
+Dependencies live in `${XDG_DATA_HOME:-~/.local/share}/nvim/jupyter`, separate
+from project environments. Plugins are pinned in `lazy-lock.json`.
+
+| Shortcut | Action |
+| --- | --- |
+| `Space ji` | Select and start a Jupyter kernel |
+| `Space jr` | Run current cell or visual selection |
+| `Space jn` | Run cell and advance |
+| `Space ja` | Run all cells |
+| `[j` / `]j` | Previous / next cell |
+| `Space jo` | Open cell output |
+| `Space jp` | Open plot in the system image viewer |
+| `Space jx` / `Space jR` | Interrupt / restart kernel |
+
+Kernels start explicitly; opening a notebook never executes its code. Existing
+outputs load when its kernel starts. `:write` saves source first, then exports
+results into the same notebook. Wait for execution to finish before saving final
+results. Text output appears below cells; images use an external viewer through
+Pillow (`xdg-open` on Linux, requiring a working desktop image association).
+Use `:MoltenDeinit` to stop the current kernel. Quarto, inline images, and browser
+widgets are not configured.
+
+Choose `nvim-python` for the isolated default environment. For project packages,
+activate the project environment and run `python -m pip install ipykernel`, then
+`python -m ipykernel install --user --name my-project`. Select `my-project` with
+`Space ji`. `:VenvSelect` affects Python tooling, not the running Jupyter kernel.
+
+To create a notebook, write a Python file with `# %%` separators and run
+`jupytext --to ipynb notebook.py`, then open the resulting `.ipynb` file. Jupytext
+uses a sibling Python file while editing; avoid editing both representations at
+once. An existing sibling is retained and used as the text source.
+
+If notebooks show JSON, check `:!jupytext --version` and `:Lazy`. If Molten commands
+are missing, run `:UpdateRemotePlugins` and restart. Use `:checkhealth provider`
+and `:checkhealth molten` to diagnose Python dependencies. Ordinary editing
+remains available without notebook dependencies; notebook commands require setup.
+
+
 ## Updating
 
 For a standalone installation, run `git pull --ff-only` in `~/.config/nvim`.
