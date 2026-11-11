@@ -35,8 +35,8 @@ The compact, transparent status line shows file changes, Git details,
 diagnostics, cursor position, and macro recording. Buffer tabs are disabled;
 native tab pages remain available.
 
-Shared light mode loads `morhetz/gruvbox` with medium contrast; dark mode uses
-Chocolatier. Editor backgrounds, floats, gutters, and status lines remain
+Shared light mode loads the local, palette-driven Kimbie Light scheme; dark mode
+uses Chocolatier. Editor backgrounds, floats, gutters, and status lines remain
 transparent. Selection and completion surfaces retain their colours. The shared
 `dotfiles-theme` command switches open editors live.
 

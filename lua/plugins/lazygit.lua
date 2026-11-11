@@ -36,7 +36,7 @@ local function setup_theme()
   write()
   vim.api.nvim_create_autocmd("ColorScheme", {
     group = vim.api.nvim_create_augroup("DotfilesLazyGitTheme", { clear = true }),
-    pattern = { "gruvbox", "chocolatier" },
+    pattern = { "kimbie_light", "chocolatier" },
     callback = write,
   })
   local files = vim.split(vim.env.LG_CONFIG_FILE or "", ",", { trimempty = true })

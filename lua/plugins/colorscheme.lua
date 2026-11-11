@@ -31,19 +31,6 @@ local function style()
     LazyGitBorder = { fg = p.cyan, bg = "NONE" },
     LazyGitFloat = { fg = p.fg, bg = "NONE" },
   }
-  if vim.g.colors_name == "gruvbox" then
-    for _, name in ipairs({ "Normal", "NormalNC", "NormalFloat", "SignColumn", "FoldColumn", "LineNr", "CursorLineNr", "EndOfBuffer", "VertSplit" }) do
-      local highlight = vim.api.nvim_get_hl(0, { name = name, link = false })
-      highlight.bg = nil
-      vim.api.nvim_set_hl(0, name, highlight)
-    end
-    for _, color in ipairs({ "Red", "Green", "Yellow", "Blue", "Purple", "Aqua", "Orange" }) do
-      local name = "Gruvbox" .. color .. "Sign"
-      local highlight = vim.api.nvim_get_hl(0, { name = name, link = false })
-      highlight.bg = nil
-      vim.api.nvim_set_hl(0, name, highlight)
-    end
-  end
   for name, highlight in pairs(overrides) do vim.api.nvim_set_hl(0, name, highlight) end
   for index, color in ipairs(p.ansi) do vim.g["terminal_color_" .. index - 1] = color end
 end
@@ -69,8 +56,7 @@ local function apply()
     })
     vim.cmd([[colorscheme chocolatier]])
   else
-    vim.g.gruvbox_contrast_light = "medium"
-    vim.cmd([[colorscheme gruvbox]])
+    vim.cmd([[colorscheme kimbie_light]])
   end
   for index, color in ipairs(p.ansi) do
     vim.g["terminal_color_" .. index - 1] = color
@@ -88,23 +74,46 @@ return {
     "qaptoR-nvim/chocolatier.nvim",
     lazy = false,
     priority = 1000,
-    dependencies = { "rktjmp/lush.nvim", "morhetz/gruvbox" },
+    dependencies = { "rktjmp/lush.nvim" },
     config = function()
       local group = vim.api.nvim_create_augroup("DotfilesTheme", { clear = true })
-      vim.api.nvim_create_autocmd("ColorScheme", { group = group, pattern = { "gruvbox", "chocolatier" }, callback = style })
+      vim.api.nvim_create_autocmd("ColorScheme", { group = group, pattern = { "kimbie_light", "chocolatier" }, callback = style })
 
       apply()
       local state = (vim.env.XDG_STATE_HOME or (vim.env.HOME .. "/.local/state")) .. "/dotfiles/theme"
       local function refresh()
+        package.loaded["config.palette"] = nil
+        local current = require("config.palette")
         local file = io.open(state .. "/mode", "r")
         local mode = file and file:read("*l") or "dark"
         if file then file:close() end
-        if mode ~= require("config.palette").mode then apply() end
+        if mode ~= current.mode then apply() end
       end
-      local watcher = vim.uv.new_fs_event()
-      if watcher then
-        watcher:start(state, {}, vim.schedule_wrap(refresh))
-        vim.api.nvim_create_autocmd("VimLeavePre", { callback = function() watcher:stop(); watcher:close() end })
+      local watchers = {}
+      local function watch(path)
+        local target = path
+        while target and (vim.uv.fs_stat(target) or {}).type ~= "directory" do
+          local parent = vim.fn.fnamemodify(target, ":h")
+          if parent == target then target = nil else target = parent end
+        end
+        if not target then return end
+        local watcher = vim.uv.new_fs_event()
+        if watcher and watcher:start(target, {}, vim.schedule_wrap(function()
+          refresh()
+          for _, active in ipairs(watchers) do active:stop(); active:close() end
+          watchers = {}
+          watch(state)
+        end)) then
+          watchers[#watchers + 1] = watcher
+        elseif watcher then
+          watcher:close()
+        end
+      end
+      watch(state)
+      if #watchers > 0 then
+        vim.api.nvim_create_autocmd("VimLeavePre", { callback = function()
+          for _, watcher in ipairs(watchers) do watcher:stop(); watcher:close() end
+        end })
       end
       vim.api.nvim_create_autocmd("FocusGained", { callback = refresh })
     end,
