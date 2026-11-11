@@ -1,4 +1,8 @@
--- Kimbie Light adaptation, based on the Kimbie color scheme (CC-BY-SA 4.0).
+-- Kimbie Light adaptation, based on Jan T. Sott / idleberg's Kimbie theme.
+-- https://github.com/idleberg/vim-kimbie (CC-BY-SA 4.0)
+vim.cmd([[highlight clear]])
+if vim.fn.exists("syntax_on") == 1 then vim.cmd([[syntax reset]]) end
+
 local p = require("config.palette")
 vim.o.background = "light"
 vim.g.colors_name = "kimbie_light"
@@ -41,6 +45,13 @@ local groups = {
   IncSearch = { fg = p.bg, bg = p.red },
   Pmenu = { fg = p.fg, bg = p.surface },
   PmenuSel = { fg = p.bright, bg = p.selection },
+  DiffAdd = { fg = p.green, bg = p.surface },
+  DiffChange = { fg = p.blue, bg = p.surface },
+  DiffDelete = { fg = p.red, bg = p.surface },
+  DiffText = { fg = p.fg, bg = p.selection, bold = true },
+  MatchParen = { fg = p.red, bg = p.selection, bold = true },
+  Folded = { fg = p.muted, bg = p.surface },
+  ColorColumn = { bg = p.surface },
 }
 
 for name, spec in pairs(groups) do vim.api.nvim_set_hl(0, name, spec) end
