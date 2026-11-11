@@ -2,7 +2,9 @@ return {
   {
     "folke/snacks.nvim",
     opts = function(_, opts)
-      local p = { cyan = "cyan", muted = "default", purple = "magenta", fg = "default" }
+      local palette = require("config.palette")
+      local p = palette.mode == "dark" and palette
+        or { cyan = "cyan", muted = "default", purple = "magenta", fg = "default" }
       opts.lazygit = vim.tbl_deep_extend("force", opts.lazygit or {}, {
         config = { gui = { theme = {
           activeBorderColor = { p.cyan, "bold" }, inactiveBorderColor = { p.muted },

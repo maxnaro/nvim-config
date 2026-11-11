@@ -54,20 +54,10 @@ local function apply()
   local palette = { dark0 = p.bg, dark1 = p.surface, dark2 = p.selection, dark3 = p.selection,
     dark4 = p.muted, light0 = p.bright, light1 = p.fg }
 
-  palette.alt_g = p.picker.muted
-  palette.alt_a = p.bg
-  palette.alt_b = p.surface
-  palette.alt_c = p.cyan
-  palette.alt_h = p.bg
-  palette.alt_r = p.bg
-  palette.alt_s = p.selection
-  if p.mode == "dark" then
-    palette.light2, palette.light3, palette.light4 = p.fg, p.picker.muted, p.picker.muted
-  end
   vim.o.background = p.mode
   for name, color in pairs({ red = p.red, green = p.green, yellow = p.yellow, blue = p.blue,
-    purple = p.purple, teal = p.cyan, orange = p.yellow, fuscia = p.purple }) do
-    for _, prefix in ipairs({ "light_", "dark_", "neutral_", "bright_", "faded_" }) do
+    purple = p.purple, teal = p.cyan }) do
+    for _, prefix in ipairs({ "light_", "neutral_", "bright_", "faded_" }) do
       palette[prefix .. name] = color
     end
   end
