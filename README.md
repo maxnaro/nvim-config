@@ -72,9 +72,13 @@ use `:LspInfo` to check attachment; standalone files work outside Git projects.
 
 For diagrams, install `npm install -g @softwaretechnik/dbml-renderer` and ensure
 `dbml-renderer` is on PATH. `:DBMLPreview` (or `Space cp` in a DBML buffer)
-renders the current buffer, including unsaved edits, as SVG and opens it using the
-system viewer. On WSL, preview uses `wslpath` and Windows `explorer.exe`; Windows
-interop and a Windows SVG viewer or browser association are required.
+opens a local HTML page in your browser and watches the buffer, including unsaved
+edits. Changes render after a 400 ms pause; the page reloads the SVG every second.
+Invalid DBML keeps the last successful diagram until the next valid edit.
+`:DBMLPreviewStop` stops watching the current buffer; deleting the buffer or
+exiting Neovim also stops watching and removes its temporary preview files.
+On WSL, preview uses `wslpath` and Windows `explorer.exe`; Windows interop and a
+Windows browser association for HTML files are required.
 `:DBMLExport` (or `Space ce` in a DBML buffer) writes an SVG next to the source
 file; `:DBMLExport path/to/diagram.svg` chooses a path. Existing files are
 protected unless you use `:DBMLExport!`. These commands render locally.
